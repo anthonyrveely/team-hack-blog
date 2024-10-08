@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Great Blogs From Youtube",
-  description: "Great Blogs From Youtube",
+  title: "Generate Great Content",
+  description: "Generate Great Content",
 };
 
 export default function RootLayout({

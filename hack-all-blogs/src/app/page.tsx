@@ -15,9 +15,10 @@ export default function Home() {
   const [error, setError] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>("");
-
+  const [blogTopics, setBlogTopics] = useState<string[]>([]);
   // Optional: State and useEffect for debouncing input
   const [debouncedUrl, setDebouncedUrl] = useState(youtubeUrl);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -69,14 +70,17 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setBlogTopics([]);
+    setIsLoading(true);
     
     if (!videoId) {
       setError("Please enter a valid YouTube URL.");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('/api/getTranscript', {
+      const transcriptResponse = await fetch('/api/getTranscript', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -84,15 +88,39 @@ export default function Home() {
         body: JSON.stringify({ youtubeUrl })
       });
 
-      const data = await response.json();
+      const transcriptData = await transcriptResponse.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch transcript');
+      if (!transcriptResponse.ok) {
+        throw new Error(transcriptData.error || 'Failed to fetch transcript');
       }
+
+      // Now that we have the transcript, let's send it to our Flask backend
+      const flaskResponse = await fetch('http://127.0.0.1:5000/transcript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ transcript: transcriptData.transcript })
+      });
+
+      console.log(flaskResponse);
+
+      const flaskData = await flaskResponse.json();
+
+      if (!flaskResponse.ok) {
+        throw new Error(flaskData.error || 'Failed to process transcript');
+      }
+
+      console.log('Blog topics:', flaskData.blog_topics);
+      console.log('Products:', flaskData.products);
+
+      setBlogTopics(flaskData.blog_topics);
       
     } catch (error) {
-      console.error('Error fetching transcript:', error);
-      setError('Failed to fetch transcript. Please try again.');
+      console.error('Error:', error);
+      setError('Failed to process the video. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
