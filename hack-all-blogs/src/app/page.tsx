@@ -1,17 +1,38 @@
 "use client";
-
-import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [transcript, setTranscript] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle the submission logic here
-    console.log("Submitted URL:", youtubeUrl);
+    setError("");
+    setTranscript("");
+    try {
+      console.log(youtubeUrl);
+      const response = await fetch('/api/getTranscript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ youtubeUrl })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch transcript');
+      }
+
+      setTranscript(data.transcript);
+    } catch (error) {
+      console.error('Error fetching transcript:', error);
+      setError('Failed to fetch transcript. Please try again.');
+    }
   };
 
   return (
@@ -35,6 +56,13 @@ export default function Home() {
             Submit
           </Button>
         </form>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {transcript && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold text-white mb-2">Transcript:</h2>
+            <p className="text-gray-300">{transcript}</p>
+          </div>
+        )}
       </div>
     </div>
   );
