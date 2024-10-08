@@ -134,7 +134,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
       <div className="w-full max-w-md p-8 rounded-lg bg-gray-800 shadow-lg">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
-          BlogTube
+          Vidblog
         </h1>
         {videoId && (
           <div className="mt-6 relative">
@@ -177,12 +177,8 @@ export default function Home() {
         
         {blogTopics.length > 0 && 
           <div className="mt-4">
-            <h3 className="text-white text-left mb-2">Generated Blog Topics:</h3>
-            <ul className="list-disc pl-4">
-              {blogTopics.map((topic, index) => (
-                <li key={index} className="text-white text-left">{topic}</li>
-              ))}
-            </ul>
+            <h3 className="text-white text-left mb-2">Generated Blog Topic:</h3>
+            <p className="text-white text-left pl-4">{blogTopics[0]}</p>
           </div>
         }
       </div>
