@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Alert } from "@/components/ui/alert";
 
 // Function to extract the YouTube video ID from a URL
 function extractVideoId(url: string): string | null {
@@ -116,7 +117,7 @@ export default function Home() {
       console.log('Blog topics:', flaskData.blog_topics);
       console.log('Products:', flaskData.products);
 
-      setBlogTopics(flaskData.blog_topics);
+      setBlogTopics(flaskData.blog_topics);      
       
     } catch (error) {
       console.error('Error:', error);
@@ -172,7 +173,18 @@ export default function Home() {
             {isProcessing ? 'Processing...' : 'Submit'}
           </Button>
         </form>
-        {error && <p className="text-red-500 mt-4">{error}</p>}                
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        
+        {blogTopics.length > 0 && 
+          <div className="mt-4">
+            <h3 className="text-white text-left mb-2">Generated Blog Topics:</h3>
+            <ul className="list-disc pl-4">
+              {blogTopics.map((topic, index) => (
+                <li key={index} className="text-white text-left">{topic}</li>
+              ))}
+            </ul>
+          </div>
+        }
       </div>
     </div>
   );
