@@ -19,6 +19,7 @@ export default function Home() {
   // Optional: State and useEffect for debouncing input
   const [debouncedUrl, setDebouncedUrl] = useState(youtubeUrl);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -72,6 +73,7 @@ export default function Home() {
     setError("");
     setBlogTopics([]);
     setIsLoading(true);
+    setIsProcessing(true);
     
     if (!videoId) {
       setError("Please enter a valid YouTube URL.");
@@ -121,6 +123,7 @@ export default function Home() {
       setError('Failed to process the video. Please try again.');
     } finally {
       setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
@@ -130,20 +133,27 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
       <div className="w-full max-w-md p-8 rounded-lg bg-gray-800 shadow-lg">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
-          YouTube to Blogs
+          BlogTube
         </h1>
         {videoId && (
-          <div className="mt-6">
+          <div className="mt-6 relative">
             {videoTitle && (
-              <h2 className="text-white text-left">
+              <h2 className="text-white text-left mb-2">
                 {videoTitle}
               </h2>
             )}
-            <img
-              src={getThumbnailUrl(videoId)}
-              alt="Video Thumbnail"
-              className="w-full rounded-md mb-4"
-            />
+            <div className="relative">
+              <img
+                src={getThumbnailUrl(videoId)}
+                alt="Video Thumbnail"
+                className="w-full rounded-md mb-4"
+              />
+              {isProcessing && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -157,8 +167,9 @@ export default function Home() {
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 transition-all duration-300"
+            disabled={isProcessing}
           >
-            Submit
+            {isProcessing ? 'Processing...' : 'Submit'}
           </Button>
         </form>
         {error && <p className="text-red-500 mt-4">{error}</p>}                
