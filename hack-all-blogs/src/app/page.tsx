@@ -12,7 +12,6 @@ function extractVideoId(url: string): string | null {
 
 export default function Home() {
   const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [transcript, setTranscript] = useState("");
   const [error, setError] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>("");
@@ -70,7 +69,6 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setTranscript("");
     
     if (!videoId) {
       setError("Please enter a valid YouTube URL.");
@@ -91,8 +89,7 @@ export default function Home() {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch transcript');
       }
-
-      setTranscript(data.transcript);
+      
     } catch (error) {
       console.error('Error fetching transcript:', error);
       setError('Failed to fetch transcript. Please try again.');
@@ -136,13 +133,7 @@ export default function Home() {
             Submit
           </Button>
         </form>
-        {error && <p className="text-red-500 mt-4">{error}</p>}        
-        {transcript && (
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold text-white mb-2">Transcript:</h2>
-            <p className="text-gray-300">{transcript}</p>
-          </div>
-        )}
+        {error && <p className="text-red-500 mt-4">{error}</p>}                
       </div>
     </div>
   );
